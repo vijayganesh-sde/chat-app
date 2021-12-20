@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head><title>hello</title>
+        <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+       .button {
+        background-color: #04AA6D; /* Green */
+        border: none;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        margin-left: 10px;
+        margin-top: 20px;
+       }
+       .button4 {border-radius: 30px;}
+       .button2 {padding: 12px;border-radius: 25px;bottom: 0px;}
+       p.input {
+            height: 20px;
+            padding: 10px;
+       }
+       .inpbox {
+           padding: 20px;
+           width: 50%;
+       }
+       .inpbox1 {
+        border-radius: 10px;
+        height: 40px;
+        width: 40%;     
+       }
+       div.container {
+            margin-left: 30%;
+       }
+       .name-display {
+           margin-left: 40%;
+           font-size: xx-large;
+       }
+    </style></head>
+            <script src="/socket.io/socket.io.js"></script>
+            <script>
+                var socket= io();
+                function setUsername(){
+                    socket.emit('setUsername', document.getElementById('name').value);
+                };
+                var user;
+                socket.on('userExists', function(data){
+                document.getElementById('error-container').innerHTML = data;
+                });
+                socket.on('userSet', function(data){
+                    user=data.username;
+                    document.body.innerHTML='<b class="name-display">welcome '+user+'</b>'+'<div class="container"><input type="textbox" id="message" class="inpbox1" placeholder="Type Your Message"  />\
+                    <input type="button" onclick="sendMessage()" class="button button2" value="Send" /></div>\
+                    <div id="message-container"></div>'
+                });
+                function sendMessage(){
+                    console.log("hello");
+                    var msg=document.getElementById('message').value;
+                    if(msg){
+                        socket.emit('msg', {message:msg, user:user});
+                    }
+                    if((document.getElementById('message').value).length>0){
+                        document.getElementById('message').value=''
+                    }   
+                }
+                socket.on('newmsg', function(data){
+                    console.log(data)
+                    if (user){
+                        document.getElementById('message-container').innerHTML+='<div class="container"><b>' + data.user + '</b>: ' + data.message + '</div>'
+                    }
+                });
+            </script>
+    <body>
+
+        <div class="error-container"></div>
+        <p class="input"><input type="text" id="name" name="name" class="inpbox" placeholder="Enter Your Name" />
+        <input type="button" class="button button4" onclick="setUsername()" value="enter chat zone" /></p>
+    </body>
+</html>
