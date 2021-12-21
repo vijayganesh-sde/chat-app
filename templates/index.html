@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head><title>hello</title>
+        <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <style>
+       .button {
+        background-color: #04AA6D; /* Green */
+        border: none;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        margin-left: 10px;
+        margin-top: 20px;
+       }
+       .button4 {border-radius: 30px;}
+       .button2 {padding: 12px;border-radius: 25px;bottom: 0px;}
+       p.input {
+            height: 20px;
+            padding: 10px;
+       }
+       .inpbox {
+           padding: 10px;
+           width: 100%;
+           
+       }
+       .inpbox1 {
+        border-radius: 10px;
+        height: 40px;
+        width: 90%;     
+       }
+       div.container {
+            margin-left: 30%;
+            background-color: rgb(153, 121, 212);
+            margin-top: 70px;
+            width: 30%;
+       }
+       .name-display {
+           margin-left: 40%;
+           font-size: xx-large;
+           color: aliceblue;
+       }
+       .fa-arrow-alt-circle-right{
+            padding: 20px;
+       }
+       .join-header {
+            text-align: center;
+            padding: 10px;
+            background: var(--dark-color-a);
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .join-main {
+            padding: 30px 40px;
+            background: var(--dark-color-b);
+        }
+        .join-main .btn {
+            margin-top: 40px;
+            width: 100%;
+            color: whitesmoke;
+            background-color: rgb(181, 164, 207);
+            font-size: x-large;
+        }
+        .fa-comment{
+            color: white;
+        }
+        .text {
+            color: rgb(255, 255, 255);
+        }
+        div.bgimg {
+            background: url(https://www.whatsappprofiledpimages.com/wp-content/uploads/2021/08/Latest-White-Background-Images-pics-for-hd.gif);
+            height: 100vh;
+            padding: 100px;
+        }
+        div.bgig1 {
+            background: url(https://data.whicdn.com/images/329225669/original.jpg);
+            height: 100vh;
+            padding: 100px;
+        }
+        .container1 {
+            margin-left: 20%;
+            background-color: rgb(159, 139, 206);
+            margin-top: 70px;
+            width: 50%;
+        }
+        .message-container {
+            margin-top: 40px;
+            color:aliceblue;
+            padding:2px 10px 10px 10px;
+            background-color: rgb(223, 188, 240);
+
+            
+        }
+        .btn {
+            cursor: pointer;
+            padding: 5px 10px;
+            background: var(--light-color);
+            color: var(--dark-color-a);
+            border: 0;
+            font-size: 20px;
+            color: aliceblue;
+        }
+        .chat-form-container {
+            padding: 2px 3px;
+            background-color: var(--dark-color-a);
+            margin-top: 600px;
+        }
+
+
+    </style></head>
+            <script src="/socket.io/socket.io.js"></script>
+            <script>
+                var socket= io();
+                function setUsername(){
+                    socket.emit('setUsername', document.getElementById('name').value);
+                };
+                var user;
+                socket.on('userExists', function(data){
+                document.getElementById('error-container').innerHTML = data;
+                });
+                socket.on('userSet', function(data){
+                    user=data.username;
+                    document.body.innerHTML='<div class="bgimg1"><div class="container1"><p class="name-display"><i class="fas fa-comment"></i> LetsChat</p><div id="message-container" class="message-container"></div><div class="chat-form-container"><input id="message" type="text" class="inpbox1" placeholder="Type Your Message" required autocomplete="off" />\
+                        <button class="btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send </button>\
+                    </div></div>'
+                });
+                function sendMessage(){
+                    console.log("hello");
+                    var msg=document.getElementById('message').value;
+                    if(msg){
+                        socket.emit('msg', {message:msg, user:user});
+                    }
+                    if((document.getElementById('message').value).length>0){
+                        document.getElementById('message').value=''
+                    }   
+                }
+                socket.on('newmsg', function(data){
+                    console.log(data)
+                    if (user){
+                        document.getElementById('message-container').innerHTML+='<div class="container"><b>' + data.user + '</b>: ' + data.message + '</div>'
+                    }
+                });
+            </script>
+    <body>
+        <div class="bgimg">
+        <div class="error-container"></div>
+        <div class="container"><header class="join-header">
+            <h1 class="text"><i class="fas fa-comment"></i> LetsChat</h1>
+        </header>
+        <main class="join-main">
+                <div >
+                    <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        placeholder="Enter Your Name"
+                        class="inpbox"
+                        required
+                    />
+                </div>
+                <p><button type="submit" class="btn" onclick="setUsername()" >Join Chat</button></p>
+        </main></div>
+    </div>
+    </body>
+</html>
